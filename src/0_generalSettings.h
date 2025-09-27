@@ -34,8 +34,8 @@ wifi_power_t cpType = WIFI_POWER_7dBm; // Only use values from above!
 // WiFi settings (for vehicle configuration website, open 192.168.4.1 in your browser)----------------------------
 // Note: if these credentials were changed, using the configuration website, 
 // you can find the current ones in the serial monitor!
-String default_ssid = "My_Trailer"; // Select this network
-String default_password = "123456789"; // Then enter this password
+String default_ssid = "Snowblower"; // Select this network
+String default_password = "boomer4135"; // Then enter this password
 
 // Configuration website settings --------------------------------------------------------------------------------
 #define USE_CSS // Simple, unformatted Website style is used, if not defined
@@ -44,7 +44,7 @@ String default_password = "123456789"; // Then enter this password
 // ESP-Now settings (for wireless communication with your tractor) -----------------------------------------------
 // Select, wether or not you want to use your own trailer MAC address below
 // otherwise, the hardware MAC address is used
-bool DefaultUseCustomMac = false; // true = use custom mac
+bool DefaultUseCustomMac = true; // true = use custom mac
 
 // Custom MAC address for communication with tractor:
 // Only addresses with low multicast bit are valid: http://sqa.fyicenter.com/1000208_MAC_Address_Validator.html
@@ -54,7 +54,7 @@ bool DefaultUseCustomMac = false; // true = use custom mac
 // Use hex calculator for verification!
 // This results in the following numbering schematic recommendation:
 // Always FE : Country number (phone country code) : Region number (phone area code) : User Number 1 : User Number 2 : Trailer Number
-uint8_t defaultCustomMACAddress[] = {0xFE, 0x00, 0x00, 0x00, 0x00, 0x01};
+uint8_t defaultCustomMACAddress[] = {0xFE, 0x81, 0x45, 0x00, 0x00, 0x01};
 // Please use your own addresses, otherwise you could get in trouble and your trailer is suddenly controlled by someone else! <<------------- NOTE!
 
 // Trailer settings ----------------------------------------------------------------------------------------------
