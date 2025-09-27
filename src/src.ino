@@ -120,6 +120,7 @@ typedef struct struct_message
   bool rampsUp;
   bool rampsDown;
   bool beaconsOn;
+  uint16_t chuteServoVal;
 } struct_message;
 
 // Create a struct_message called trailerData
@@ -216,6 +217,9 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
   Serial.println(trailerData.rampsDown);
   Serial.print("Beacons on: ");
   Serial.println(trailerData.beaconsOn);
+
+  Serial.print("Chute Servo Val: ");
+  Serial.println(trailerData.chuteServoVal);
 
   Serial.println();
 }
