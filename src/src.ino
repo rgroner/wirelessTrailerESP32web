@@ -193,34 +193,54 @@ uint8_t indicatorLightBrightness = 100;
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
+  unsigned long t = millis();
+
+  // Print basic packet info
+  Serial.printf("\n[OnDataRecv] %lums - Received %d bytes from %02X:%02X:%02X:%02X:%02X:%02X\n", t, len,
+                mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+  // Print raw packet bytes (hex)
+  Serial.print("Raw: ");
+  for (int i = 0; i < len; i++)
+  {
+    Serial.printf("%02X ", incomingData[i]);
+  }
+  Serial.println();
+
+  // Check packet size before parsing
+  if (len < (int)sizeof(trailerData))
+  {
+    Serial.printf("Warning: incoming packet too small (%d bytes), expected %d bytes. Skipping memcpy.\n", len, (int)sizeof(trailerData));
+    return;
+  }
+
+  // Parse into structured data and print human readable values
   memcpy(&trailerData, incomingData, sizeof(trailerData));
 
-  // led(); // This is now handled in loop
-
-  Serial.print("Tailllight: ");
-  Serial.println(trailerData.tailLight * tailLightBrightness / 100);
-  Serial.print("Sidelight: ");
-  Serial.println(trailerData.sideLight * sideLightBrightness / 100);
-  Serial.print("Reversing light: ");
-  Serial.println(trailerData.reversingLight * reversingLightBrightness / 100);
-  Serial.print("Indicator L: ");
-  Serial.println(trailerData.indicatorL * indicatorLightBrightness / 100);
-  Serial.print("Indicator R: ");
-  Serial.println(trailerData.indicatorR * indicatorLightBrightness / 100);
-  Serial.print("Legs up: ");
-  Serial.println(trailerData.legsUp);
-  Serial.print("Legs down: ");
-  Serial.println(trailerData.legsDown);
-  Serial.print("Ramps up: ");
-  Serial.println(trailerData.rampsUp);
-  Serial.print("Ramps down: ");
-  Serial.println(trailerData.rampsDown);
-  Serial.print("Beacons on: ");
-  Serial.println(trailerData.beaconsOn);
-
-  Serial.print("Chute Servo Val: ");
-  Serial.println(trailerData.chuteServoVal);
-
+  if (trailerData.chuteServoVal < 1500) {
+    trailerData.legsUp = true;
+    trailerData.legsDown = false;
+  }
+  else if (trailerData.chuteServoVal > 1500) {
+    trailerData.legsUp = false;
+    trailerData.legsDown = true;
+  }
+  else {
+    trailerData.legsUp = false;
+    trailerData.legsDown = false;
+  }
+  Serial.printf("Parsed trailerData (struct size %d bytes):\n", (int)sizeof(trailerData));
+//  Serial.printf("  Taillight: %d\n", trailerData.tailLight * tailLightBrightness / 100);
+//  Serial.printf("  Sidelight: %d\n", trailerData.sideLight * sideLightBrightness / 100);
+//  Serial.printf("  Reversing light: %d\n", trailerData.reversingLight * reversingLightBrightness / 100);
+//  Serial.printf("  Indicator L: %d\n", trailerData.indicatorL * indicatorLightBrightness / 100);
+//  Serial.printf("  Indicator R: %d\n", trailerData.indicatorR * indicatorLightBrightness / 100);
+  Serial.printf("  Legs up: %d\n", trailerData.legsUp);
+  Serial.printf("  Legs down: %d\n", trailerData.legsDown);
+//  Serial.printf("  Ramps up: %d\n", trailerData.rampsUp);
+//  Serial.printf("  Ramps down: %d\n", trailerData.rampsDown);
+//  Serial.printf("  Beacons on: %d\n", trailerData.beaconsOn);
+  Serial.printf("  Chute Servo Val: %u\n", trailerData.chuteServoVal);
   Serial.println();
 }
 

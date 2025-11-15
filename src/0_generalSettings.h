@@ -7,10 +7,10 @@
  */
 
 // Debug settings -----------------------------------------------------------------------------------------------
-//#define DEBUG // More infos such as EEPROM dump on serial monitor, if defined
+#define DEBUG // More infos such as EEPROM dump on serial monitor, if defined
 
 // EEPROM settings ----------------------------------------------------------------------------------------------
-uint8_t eeprom_id = 2; // change this id (between 1 and 255), if you want to restore EEPROM defaults (only executed 1x) <<------------- NOTE!
+uint8_t eeprom_id = 3; // change this id (between 1 and 255), if you want to restore EEPROM defaults (only executed 1x) <<------------- NOTE!
 //#define ERASE_EEPROM_ON_BOOT // EEPROM is completely overwritten, if defined! Never define it, trailer will not work!
 // only define it in order to clean up junk from old projects in your EEPROM
 
