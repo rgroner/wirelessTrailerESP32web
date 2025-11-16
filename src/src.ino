@@ -637,7 +637,7 @@ void mcpwmOutput()
       legsServoMicros--;
   }
 #endif
-  mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, legsServoMicros);
+  mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, trailerData.chuteServoVal);
 
   // Ramps servo CH2 (active, if hazards are on, use horn pot) *****************************
 #ifdef RAMPS_ESC_MODE // ESC mode
