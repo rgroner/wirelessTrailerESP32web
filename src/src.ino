@@ -121,6 +121,7 @@ typedef struct struct_message
   bool rampsDown;
   bool beaconsOn;
   uint16_t chuteServoVal;
+  uint16_t blowerTarget;
 } struct_message;
 
 // Create a struct_message called trailerData
@@ -235,12 +236,13 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 //  Serial.printf("  Reversing light: %d\n", trailerData.reversingLight * reversingLightBrightness / 100);
 //  Serial.printf("  Indicator L: %d\n", trailerData.indicatorL * indicatorLightBrightness / 100);
 //  Serial.printf("  Indicator R: %d\n", trailerData.indicatorR * indicatorLightBrightness / 100);
-  Serial.printf("  Legs up: %d\n", trailerData.legsUp);
-  Serial.printf("  Legs down: %d\n", trailerData.legsDown);
+//  Serial.printf("  Legs up: %d\n", trailerData.legsUp);
+//  Serial.printf("  Legs down: %d\n", trailerData.legsDown);
 //  Serial.printf("  Ramps up: %d\n", trailerData.rampsUp);
 //  Serial.printf("  Ramps down: %d\n", trailerData.rampsDown);
 //  Serial.printf("  Beacons on: %d\n", trailerData.beaconsOn);
   Serial.printf("  Chute Servo Val: %u\n", trailerData.chuteServoVal);
+  Serial.printf("  Blower ESC Val: %u\n", trailerData.blowerTarget);
   Serial.println();
 }
 
@@ -641,31 +643,41 @@ void mcpwmOutput()
 
   // Ramps servo CH2 (active, if hazards are on, use horn pot) *****************************
 #ifdef RAMPS_ESC_MODE // ESC mode
-  static uint16_t rampsServoMicros = CH2L;
-  if (trailerData.rampsDown)
-    rampsServoMicros = CH2L; // down
-  else if (trailerData.rampsUp)
-    rampsServoMicros = CH2R; // up
-  else
-    rampsServoMicros = CH2C; // off
-
+  static uint16_t rampsServoMicros = CH2C;
+      if (trailerData.blowerTarget > 1500)
+      {
+        rampsServoMicros = CH2R; // up
+      }
+      else 
+      {
+        rampsServoMicros = CH2C; // off
+      }
+        
 #else // Servo mode
-  static uint16_t rampsServoMicrosTarget = CH2R;
-  static uint16_t rampsServoMicros = CH2R;
+  static uint16_t rampsServoMicrosTarget = CH2C;
+  static uint16_t rampsServoMicros = CH2C;
   static unsigned long rampsDelayMicros;
   if (micros() - rampsDelayMicros > RAMPS_RAMP_TIME)
   {
     rampsDelayMicros = micros();
-    if (trailerData.rampsDown)
-      rampsServoMicrosTarget = CH2L; // down
-    else if (trailerData.rampsUp)
-      rampsServoMicrosTarget = CH2R; // up
-    else
-      rampsServoMicrosTarget = rampsServoMicros; // stop
-    if (rampsServoMicros < rampsServoMicrosTarget)
-      rampsServoMicros++;
-    if (rampsServoMicros > rampsServoMicrosTarget)
-      rampsServoMicros--;
+    if (trailerData.blowerTarget < 1500)
+    {
+      rampsServoMicrosTarget = CH2C; // stop
+      rampsServoMicros = CH2C;
+
+    }
+    else 
+    {
+      if (trailerData.blowerTarget == 1500)
+        rampsServoMicrosTarget = CH2C; // stop
+      else 
+        rampsServoMicrosTarget = CH2R; // up
+      
+      if (rampsServoMicros < rampsServoMicrosTarget)
+        rampsServoMicros++;
+      if (rampsServoMicros > rampsServoMicrosTarget)
+        rampsServoMicros--;
+    }
   }
 #endif
   mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, rampsServoMicros);
